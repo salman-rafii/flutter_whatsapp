@@ -39,7 +39,7 @@ class _CustomTextState extends State<CustomText> {
         // text: widget.text,
         Text(
       widget.text,
-      style: GoogleFonts.assistant(
+      style: TextStyle(
           letterSpacing: widget.letterSpacing,
           fontSize: widget.fontSize,
           fontWeight: widget.fontWeight,
