@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+// function to show the snackbar
 void showSnackbar({required BuildContext context, required String content}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -12,6 +13,7 @@ void showSnackbar({required BuildContext context, required String content}) {
   );
 }
 
+// function to pick the image from gallery
 Future<File?> pickImageFromGallery(BuildContext context) async {
   File? image;
   try {
