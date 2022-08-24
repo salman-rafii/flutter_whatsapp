@@ -8,6 +8,8 @@ import 'package:flutter_whatsapp/common/repositories/common_firebase_storage_rep
 import 'package:flutter_whatsapp/common/utils/utils.dart';
 import 'package:flutter_whatsapp/features/auth/screens/otp_screen.dart';
 import 'package:flutter_whatsapp/features/auth/screens/user_information_screen.dart';
+import 'package:flutter_whatsapp/models/user_model.dart';
+import 'package:flutter_whatsapp/screens/mobile_layout_screen.dart';
 
 final authrepositoryProvider = Provider(
     (ref) => AuthRepository(FirebaseAuth.instance, FirebaseFirestore.instance));
@@ -64,11 +66,13 @@ class AuthRepository {
 
   // function to save user data to firebase
 
-  void saveUserDataToFirebase(
-      {required String name,
-      required File? profilePic,
-      required ProviderRef ref,
-      required BuildContext context}) async {
+  void saveUserDataToFirebase({
+    required String name,
+    required File? profilePic,
+    required ProviderRef ref,
+    required BuildContext context,
+    // bool mounted = true
+  }) async {
     try {
       String uid = auth.currentUser!.uid;
       String photoUrl =
@@ -79,6 +83,20 @@ class AuthRepository {
             .read(commonFirebaseStorageRepositoryProvider)
             .storeFileToFirebase("profilePic/$uid", profilePic);
       }
+
+      var user = UserModel(
+          name: name,
+          uid: uid,
+          profilePic: photoUrl,
+          isOnline: true,
+          phoneNumber: auth.currentUser!.uid,
+          groupId: []);
+      await firestore.collection("users").doc(uid).set(user.toMap());
+      // if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MobileLayoutScreen()),
+          (route) => false);
     } catch (e) {
       showSnackbar(context: context, content: e.toString());
     }

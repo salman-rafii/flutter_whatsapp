@@ -20,12 +20,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Whatsapp UI',
+      title: 'Flutter Whatsapp',
       theme: ThemeData.dark().copyWith(
           scaffoldBackgroundColor: backgroundColor,
           appBarTheme: const AppBarTheme(color: appBarColor)),
       onGenerateRoute: (settings) => generateRoute(settings),
-      home: const UserInformationScreen(),
+      home: const LandingScreen(),
       // home: const ResponsiveLayout(
       //   mobileScreenLayout: MobileLayoutScreen(),
       //   webScreenLayout: WebLayoutScreen(),

@@ -1,19 +1,23 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp/common/utils/utils.dart';
+import 'package:flutter_whatsapp/features/auth/controller/auth_controller.dart';
+import 'package:flutter_whatsapp/features/auth/repository/auth_repository.dart';
 
-class UserInformationScreen extends StatefulWidget {
+class UserInformationScreen extends ConsumerStatefulWidget {
   static const String routeName = "/user-information";
   const UserInformationScreen({Key? key}) : super(key: key);
 
   @override
-  State<UserInformationScreen> createState() => _UserInformationScreenState();
+  ConsumerState<UserInformationScreen> createState() =>
+      _UserInformationScreenState();
 }
 
-class _UserInformationScreenState extends State<UserInformationScreen> {
+class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
   final TextEditingController nameController = TextEditingController();
-  File? image;
+  File? profilePic;
   @override
   void dispose() {
     super.dispose();
@@ -21,8 +25,17 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
   }
 
   void selectImage() async {
-    image = await pickImageFromGallery(context);
+    profilePic = await pickImageFromGallery(context);
     setState(() {});
+  }
+
+  void storeUserData() {
+    String name = nameController.text.trim();
+    if (name.isNotEmpty) {
+      ref
+          .read(authcontrollerProvider)
+          .saveUserDataToFirebase(context, name, profilePic);
+    }
   }
 
   @override
@@ -34,14 +47,14 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
           child: Column(children: [
             Stack(
               children: [
-                image == null
+                profilePic == null
                     ? const CircleAvatar(
                         backgroundImage: NetworkImage(
                             'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
                         radius: 64,
                       )
                     : CircleAvatar(
-                        backgroundImage: FileImage(image!),
+                        backgroundImage: FileImage(profilePic!),
                         radius: 64,
                       ),
                 Positioned(
@@ -63,7 +76,8 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
                         const InputDecoration(hintText: "Enter your Name"),
                   ),
                 ),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.done))
+                IconButton(
+                    onPressed: storeUserData, icon: const Icon(Icons.done))
               ],
             )
           ]),
