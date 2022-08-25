@@ -20,6 +20,18 @@ class AuthRepository {
 
   AuthRepository(this.auth, this.firestore);
 
+// function to check current user
+
+  Future<UserModel?> getCurrentUserData() async {
+    var userData =
+        await firestore.collection("users").doc(auth.currentUser?.uid).get();
+    UserModel? user;
+    if (userData.data() != null) {
+      user = UserModel.fromMap(userData.data()!);
+    }
+    return user;
+  }
+
 // function to sign in with phone & get the OTP
   void signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
