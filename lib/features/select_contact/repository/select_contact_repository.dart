@@ -4,6 +4,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp/common/utils/utils.dart';
 import 'package:flutter_whatsapp/models/user_model.dart';
+import 'package:flutter_whatsapp/screens/mobile_chat_screen.dart';
 
 final selectContactProvider = Provider((ref) {
   return SelectContactRepository(firestore: FirebaseFirestore.instance);
@@ -38,6 +39,7 @@ class SelectContactRepository {
 
         if (selectedPhoneNumber == userData.phoneNumber) {
           isFound = true;
+          Navigator.pushNamed(context, MobileChatScreen.routeName);
           showSnackbar(
               context: context,
               content: "Yayy! This number ExistS on this app");
