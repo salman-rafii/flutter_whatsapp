@@ -11,80 +11,90 @@ class BottomChatField extends StatefulWidget {
 }
 
 class _BottomChatFieldState extends State<BottomChatField> {
+  final TextEditingController textController = TextEditingController();
+  bool textValueChanged = false;
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: TextField(
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: mobileChatBoxColor,
-              prefixIcon: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: SizedBox(
+              controller: textController,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: mobileChatBoxColor,
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.emoji_emotions,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.gif,
+                            color: Colors.grey,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                suffixIcon: SizedBox(
                   width: 100,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       IconButton(
                         onPressed: () {},
                         icon: const Icon(
-                          Icons.emoji_emotions,
+                          Icons.camera_alt,
                           color: Colors.grey,
                         ),
                       ),
                       IconButton(
                         onPressed: () {},
                         icon: const Icon(
-                          Icons.gif,
+                          Icons.attach_file,
                           color: Colors.grey,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
-              ),
-              suffixIcon: SizedBox(
-                width: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.camera_alt,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.attach_file,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+                hintText: 'Type a message!',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  borderSide: const BorderSide(
+                    width: 0,
+                    style: BorderStyle.none,
+                  ),
                 ),
+                contentPadding: const EdgeInsets.all(10),
               ),
-              hintText: 'Type a message!',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.0),
-                borderSide: const BorderSide(
-                  width: 0,
-                  style: BorderStyle.none,
-                ),
-              ),
-              contentPadding: const EdgeInsets.all(10),
-            ),
-          ),
+              onChanged: (value) {
+                if (value.isEmpty) {
+                  textValueChanged = false;
+                } else {
+                  textValueChanged = true;
+                }
+                setState(() {});
+              }),
         ),
         Container(
           padding: const EdgeInsets.only(right: 2, bottom: 8, left: 2),
-          child: const CircleAvatar(
+          child: CircleAvatar(
             radius: 25,
-            backgroundColor: Color(0xff128c7e),
+            backgroundColor: const Color(0xff128c7e),
             child: Icon(
-              Icons.send,
+              textValueChanged ? Icons.send : Icons.mic,
               color: Colors.white,
             ),
           ),
