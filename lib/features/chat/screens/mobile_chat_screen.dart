@@ -6,7 +6,7 @@ import 'package:flutter_whatsapp/common/widgets/loader.dart';
 import 'package:flutter_whatsapp/features/auth/controller/auth_controller.dart';
 import 'package:flutter_whatsapp/features/chat/widgets/bottom_chat_field.dart';
 import 'package:flutter_whatsapp/models/user_model.dart';
-import 'package:flutter_whatsapp/widgets/chat_list.dart';
+import 'package:flutter_whatsapp/features/chat/widgets/chat_list.dart';
 
 class MobileChatScreen extends ConsumerWidget {
   static const String routeName = "/mobile-chat-screen";
@@ -65,8 +65,10 @@ class MobileChatScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          const Expanded(
-            child: ChatList(),
+          Expanded(
+            child: ChatList(
+              receiverUserId: uid,
+            ),
           ),
           BottomChatField(receiverUserId: uid),
         ],

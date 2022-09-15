@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_whatsapp/colors.dart';
 import 'package:flutter_whatsapp/features/select_contact/screens/select_contact_screen.dart';
-import 'package:flutter_whatsapp/widgets/contacts_list.dart';
+import 'package:flutter_whatsapp/features/chat/widgets/contacts_list.dart';
 
 class MobileLayoutScreen extends StatelessWidget {
   const MobileLayoutScreen({Key? key}) : super(key: key);
