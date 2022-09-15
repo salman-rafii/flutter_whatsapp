@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class ChatContact {
   final String name;
   final String profilePic;

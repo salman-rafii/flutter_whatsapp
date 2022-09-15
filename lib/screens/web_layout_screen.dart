@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_whatsapp/colors.dart';
-import 'package:flutter_whatsapp/info.dart';
 import 'package:flutter_whatsapp/widgets/chat_list.dart';
 import 'package:flutter_whatsapp/widgets/web_chat_appbar.dart';
 import 'package:flutter_whatsapp/widgets/contacts_list.dart';
-import 'package:flutter_whatsapp/widgets/my_message_card.dart';
-import 'package:flutter_whatsapp/widgets/sender_message_card.dart';
 import 'package:flutter_whatsapp/widgets/web_profile_bar.dart';
 import 'package:flutter_whatsapp/widgets/web_search_bar.dart';
 
