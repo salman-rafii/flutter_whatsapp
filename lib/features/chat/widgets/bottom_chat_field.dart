@@ -1,18 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp/colors.dart';
+import 'package:flutter_whatsapp/features/chat/controller/chat_controller.dart';
 
-class BottomChatField extends StatefulWidget {
-  const BottomChatField({
-    Key? key,
-  }) : super(key: key);
+class BottomChatField extends ConsumerStatefulWidget {
+  final String receiverUserId;
+  const BottomChatField({Key? key, required this.receiverUserId})
+      : super(key: key);
 
   @override
-  State<BottomChatField> createState() => _BottomChatFieldState();
+  ConsumerState<BottomChatField> createState() => _BottomChatFieldState();
 }
 
-class _BottomChatFieldState extends State<BottomChatField> {
+class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   final TextEditingController textController = TextEditingController();
-  bool textValueChanged = false;
+  bool isShowSendButton = false;
+
+  void sendTextMessage() async {
+    if (isShowSendButton) {
+      ref.read(chatControllerProvider).sendTextMessage(
+            context,
+            textController.text.trim(),
+            widget.receiverUserId,
+          );
+
+      setState(() {
+        textController.text = "";
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -81,9 +104,9 @@ class _BottomChatFieldState extends State<BottomChatField> {
               ),
               onChanged: (value) {
                 if (value.isEmpty) {
-                  textValueChanged = false;
+                  isShowSendButton = false;
                 } else {
-                  textValueChanged = true;
+                  isShowSendButton = true;
                 }
                 setState(() {});
               }),
@@ -93,9 +116,12 @@ class _BottomChatFieldState extends State<BottomChatField> {
           child: CircleAvatar(
             radius: 25,
             backgroundColor: const Color(0xff128c7e),
-            child: Icon(
-              textValueChanged ? Icons.send : Icons.mic,
-              color: Colors.white,
+            child: GestureDetector(
+              onTap: sendTextMessage,
+              child: Icon(
+                isShowSendButton ? Icons.send : Icons.mic,
+                color: Colors.white,
+              ),
             ),
           ),
         )

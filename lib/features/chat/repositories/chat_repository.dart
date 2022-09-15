@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp/common/enums/message_enum.dart';
 import 'package:flutter_whatsapp/common/utils/utils.dart';
 import 'package:flutter_whatsapp/models/chat_contact.dart';
 import 'package:flutter_whatsapp/models/message.dart';
 import 'package:flutter_whatsapp/models/user_model.dart';
 import 'package:uuid/uuid.dart';
+
+final chatRepositoryProvider = Provider((ref) => ChatRepository(
+    firestore: FirebaseFirestore.instance, auth: FirebaseAuth.instance));
 
 class ChatRepository {
   final FirebaseFirestore firestore;
@@ -15,6 +19,32 @@ class ChatRepository {
     required this.firestore,
     required this.auth,
   });
+
+  Stream<List<ChatContact>> getChatContacts() {
+    return firestore
+        .collection("users")
+        .doc(auth.currentUser!.uid)
+        .collection("chats")
+        .snapshots()
+        .asyncMap((event) async {
+      List<ChatContact> contacts = [];
+      for (var documents in event.docs) {
+        var chatContact = ChatContact.fromMap(documents.data());
+        var userData = await firestore
+            .collection('users')
+            .doc(chatContact.contactId)
+            .get();
+        var user = UserModel.fromMap(userData.data()!);
+        contacts.add(ChatContact(
+            name: user.name,
+            profilePic: user.profilePic,
+            contactId: chatContact.contactId,
+            lastMessage: chatContact.lastMessage,
+            timeSent: chatContact.timeSent));
+      }
+      return contacts;
+    });
+  }
 
   void _saveDataToContactSubcollection(
     UserModel senderUserData,

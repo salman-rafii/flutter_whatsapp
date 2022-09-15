@@ -10,9 +10,9 @@ final authcontrollerProvider = Provider((ref) {
   return AuthController(authRepository: authRepository, ref: ref);
 });
 
-final userDataProvider = FutureProvider((ref) {
-  final authControllerProvider = ref.watch(authcontrollerProvider);
-  return authControllerProvider.getUserData();
+final userDataAuthProvider = FutureProvider((ref) {
+  final authController = ref.watch(authcontrollerProvider);
+  return authController.getUserData();
 });
 
 class AuthController {

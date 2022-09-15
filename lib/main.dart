@@ -28,7 +28,7 @@ class MyApp extends ConsumerWidget {
           scaffoldBackgroundColor: backgroundColor,
           appBarTheme: const AppBarTheme(color: appBarColor)),
       onGenerateRoute: (settings) => generateRoute(settings),
-      home: ref.watch(userDataProvider).when(
+      home: ref.watch(userDataAuthProvider).when(
             data: (user) {
               if (user == null) {
                 return const LandingScreen();
