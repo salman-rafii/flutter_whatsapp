@@ -25,7 +25,7 @@ class ContactsList extends ConsumerWidget {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 var chatData = snapshot.data![index];
-                print(chatData.profilePic);
+
                 return Column(
                   children: [
                     InkWell(
