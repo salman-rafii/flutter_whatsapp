@@ -57,6 +57,15 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
     }
   }
 
+  void selectGIF() async {
+    final gif = await pickGIF(context);
+    if (gif != null) {
+      ref
+          .read(chatControllerProvider)
+          .sendGIF(context, gif.url, widget.receiverUserId);
+    }
+  }
+
   void selectVideo() async {
     File? video = await pickImageFromGallery(context);
     if (video != null) {
@@ -80,7 +89,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void hideKeyboard() => focusNode.unfocus();
 
 // function to upadate the emoji container
-//testing
   void toggleEmojiKeyboardContainer() {
     if (isShowEmojiContainer) {
       showKeyboard();
@@ -126,7 +134,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                                   : const Icon(Icons.keyboard),
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: selectGIF,
                               icon: const Icon(
                                 Icons.gif,
                                 color: Colors.grey,
