@@ -79,6 +79,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void showKeyboard() => focusNode.requestFocus();
   void hideKeyboard() => focusNode.unfocus();
 
+// function to upadate the emoji container
   void toggleEmojiKeyboardContainer() {
     if (isShowEmojiContainer) {
       showKeyboard();
