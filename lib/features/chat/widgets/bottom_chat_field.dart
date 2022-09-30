@@ -6,8 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_whatsapp/colors.dart';
 import 'package:flutter_whatsapp/common/enums/message_enum.dart';
+import 'package:flutter_whatsapp/common/provider/message_reply_provider.dart';
 import 'package:flutter_whatsapp/common/utils/utils.dart';
 import 'package:flutter_whatsapp/features/chat/controller/chat_controller.dart';
+import 'package:flutter_whatsapp/features/chat/widgets/message_reply_preview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -148,104 +150,110 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
 
   @override
   Widget build(BuildContext context) {
+    final messageReply = ref.watch(messageReplyProvider);
+    final isShowMessageReply = messageReply != null;
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                  focusNode: focusNode,
-                  controller: textController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: mobileChatBoxColor,
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: SizedBox(
-                        width: 100,
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: toggleEmojiKeyboardContainer,
-                              icon: isShowEmojiContainer
-                                  ? const Icon(
-                                      Icons.emoji_emotions,
+        isShowMessageReply
+            ? const MessageReplyPreview()
+            : Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                        focusNode: focusNode,
+                        controller: textController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: mobileChatBoxColor,
+                          prefixIcon: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: SizedBox(
+                              width: 100,
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: toggleEmojiKeyboardContainer,
+                                    icon: isShowEmojiContainer
+                                        ? const Icon(
+                                            Icons.emoji_emotions,
+                                            color: Colors.grey,
+                                          )
+                                        : const Icon(Icons.keyboard),
+                                  ),
+                                  IconButton(
+                                    onPressed: selectGIF,
+                                    icon: const Icon(
+                                      Icons.gif,
                                       color: Colors.grey,
-                                    )
-                                  : const Icon(Icons.keyboard),
-                            ),
-                            IconButton(
-                              onPressed: selectGIF,
-                              icon: const Icon(
-                                Icons.gif,
-                                color: Colors.grey,
+                                    ),
+                                  )
+                                ],
                               ),
-                            )
-                          ],
+                            ),
+                          ),
+                          suffixIcon: SizedBox(
+                            width: 100,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  onPressed: selectImage,
+                                  icon: const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: selectVideo,
+                                  icon: const Icon(
+                                    Icons.attach_file,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          hintText: 'Type a message!',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                            borderSide: const BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.all(10),
+                        ),
+                        onChanged: (value) {
+                          if (value.isEmpty) {
+                            isShowSendButton = false;
+                          } else {
+                            isShowSendButton = true;
+                          }
+                          setState(() {});
+                        }),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.only(right: 2, bottom: 8, left: 2),
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundColor: const Color(0xff128c7e),
+                      child: GestureDetector(
+                        onTap: sendTextMessage,
+                        child: Icon(
+                          isShowSendButton
+                              ? Icons.send
+                              : isRecording
+                                  ? Icons.close
+                                  : Icons.mic,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    suffixIcon: SizedBox(
-                      width: 100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            onPressed: selectImage,
-                            icon: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: selectVideo,
-                            icon: const Icon(
-                              Icons.attach_file,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    hintText: 'Type a message!',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                      borderSide: const BorderSide(
-                        width: 0,
-                        style: BorderStyle.none,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.all(10),
                   ),
-                  onChanged: (value) {
-                    if (value.isEmpty) {
-                      isShowSendButton = false;
-                    } else {
-                      isShowSendButton = true;
-                    }
-                    setState(() {});
-                  }),
-            ),
-            Container(
-              padding: const EdgeInsets.only(right: 2, bottom: 8, left: 2),
-              child: CircleAvatar(
-                radius: 25,
-                backgroundColor: const Color(0xff128c7e),
-                child: GestureDetector(
-                  onTap: sendTextMessage,
-                  child: Icon(
-                    isShowSendButton
-                        ? Icons.send
-                        : isRecording
-                            ? Icons.close
-                            : Icons.mic,
-                    color: Colors.white,
-                  ),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
         isShowEmojiContainer
             ? SizedBox(
                 height: 310,

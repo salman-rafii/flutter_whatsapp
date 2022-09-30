@@ -8,8 +8,13 @@ class Message {
   final DateTime timeSent;
   final String messageId;
   final bool isSeen;
-
+  final String repliedMessage;
+  final String repliedTo;
+  final MessageEnum repliedMessageType;
   Message({
+    required this.repliedMessage,
+    required this.repliedTo,
+    required this.repliedMessageType,
     required this.senderId,
     required this.recieverid,
     required this.text,
@@ -28,6 +33,9 @@ class Message {
       'timeSent': timeSent.millisecondsSinceEpoch,
       'messageId': messageId,
       'isSeen': isSeen,
+      'repliedMessageType': repliedMessageType.type,
+      'repliedMessage': repliedMessage,
+      'repliedTo': repliedTo
     };
   }
 
@@ -40,6 +48,9 @@ class Message {
       timeSent: DateTime.fromMillisecondsSinceEpoch(map['timeSent']),
       messageId: map['messageId'] ?? '',
       isSeen: map['isSeen'] ?? false,
+      repliedMessageType: (map['repliedMessageType'] as String).toEnum(),
+      repliedTo: map['repliedTo'] ?? '',
+      repliedMessage: map['repliedMessage'] ?? '',
     );
   }
 }
