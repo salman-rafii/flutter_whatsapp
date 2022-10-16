@@ -68,6 +68,7 @@ class ChatController {
   ) {
     int gifUrlPartIndex = gifUrl.lastIndexOf("-") + 1;
     String gifUrlPart = gifUrl.substring(gifUrlPartIndex);
+    // ignore: unused_local_variable
     String newGifUrl = "https://i.giphy.com/media/$gifUrlPart/200.gif";
     final messageReply = ref.read(messageReplyProvider);
     ref.read(userDataAuthProvider).whenData(
@@ -83,10 +84,7 @@ class ChatController {
   }
 
   void setChatMessageSeen(
-    BuildContext context,
-    String receiverUserId,
-    String messageId
-  ){
+      BuildContext context, String receiverUserId, String messageId) {
     chatRepository.setChatMessageSeen(context, receiverUserId, messageId);
   }
 }
