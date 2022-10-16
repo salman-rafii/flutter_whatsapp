@@ -301,4 +301,31 @@ class ChatRepository {
       showSnackbar(context: context, content: e.toString());
     }
   }
+
+  void setChatMessageSeen(
+      BuildContext context, String receiverUserId, String messageId) async {
+    try {
+      await firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .collection("chats")
+          .doc(receiverUserId)
+          .collection("messages")
+          .doc(messageId)
+          .update({'isSeen': true});
+
+      // users -> receiverid > senderid >messages > messageid > storemessage
+
+      await firestore
+          .collection("users")
+          .doc(receiverUserId)
+          .collection("chats")
+          .doc(auth.currentUser!.uid)
+          .collection("messages")
+          .doc(messageId)
+          .update({'isSeen': true});
+    } catch (e) {
+      showSnackbar(context: context, content: e.toString());
+    }
+  }
 }
