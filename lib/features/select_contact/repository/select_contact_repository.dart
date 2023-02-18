@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -39,7 +41,7 @@ class SelectContactRepository {
 
         if (selectedPhoneNumber == userData.phoneNumber) {
           isFound = true;
-          // ignore: use_build_context_synchronously
+
           Navigator.pushNamed(context, MobileChatScreen.routeName,
               arguments: {'name': userData.name, 'uid': userData.uid});
         }

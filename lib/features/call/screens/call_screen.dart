@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,6 +59,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     disconnectButtonChild: IconButton(
                       onPressed: () async {
                         await client!.engine.leaveChannel();
+
                         ref.read(callControllerProvider).endCall(
                               widget.call.callerId,
                               widget.call.receiverId,

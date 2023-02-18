@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -249,6 +251,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                 backgroundColor: const Color(0xFF128C7E),
                 radius: 25,
                 child: GestureDetector(
+                  onTap: sendTextMessage,
                   child: Icon(
                     isShowSendButton
                         ? Icons.send
@@ -257,7 +260,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                             : Icons.mic,
                     color: Colors.white,
                   ),
-                  onTap: sendTextMessage,
                 ),
               ),
             ),
