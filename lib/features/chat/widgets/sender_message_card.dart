@@ -1,26 +1,24 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:swipe_to/swipe_to.dart';
 
-import 'package:flutter_whatsapp/colors.dart';
+import 'package:flutter_whatsapp/common/utils/colors.dart';
 import 'package:flutter_whatsapp/common/enums/message_enum.dart';
 import 'package:flutter_whatsapp/features/chat/widgets/display_text_image_gif.dart';
-import 'package:flutter_whatsapp/widgets/custom_text.dart';
-import 'package:swipe_to/swipe_to.dart';
 
 class SenderMessageCard extends StatelessWidget {
   const SenderMessageCard({
     Key? key,
     required this.message,
-    required this.type,
     required this.date,
+    required this.type,
     required this.onRightSwipe,
     required this.repliedText,
     required this.username,
     required this.repliedMessageType,
   }) : super(key: key);
   final String message;
-  final MessageEnum type;
   final String date;
+  final MessageEnum type;
   final VoidCallback onRightSwipe;
   final String repliedText;
   final String username;
@@ -29,6 +27,7 @@ class SenderMessageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isReplying = repliedText.isNotEmpty;
+
     return SwipeTo(
       onRightSwipe: onRightSwipe,
       child: Align(
@@ -54,31 +53,37 @@ class SenderMessageCard extends StatelessWidget {
                           bottom: 20,
                         )
                       : const EdgeInsets.only(
-                          left: 5, right: 5, top: 5, bottom: 25),
+                          left: 5,
+                          top: 5,
+                          right: 5,
+                          bottom: 25,
+                        ),
                   child: Column(
                     children: [
                       if (isReplying) ...[
-                        CustomText(
-                          text: username,
-                          fontWeight: FontWeight.bold,
+                        Text(
+                          username,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 3,
-                        ),
+                        const SizedBox(height: 3),
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                              color: backgroundColor.withOpacity(0.5),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(5))),
+                            color: backgroundColor.withOpacity(0.5),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(
+                                5,
+                              ),
+                            ),
+                          ),
                           child: DisplayTextImageGIF(
                             message: repliedText,
                             type: repliedMessageType,
                           ),
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
+                        const SizedBox(height: 8),
                       ],
                       DisplayTextImageGIF(
                         message: message,

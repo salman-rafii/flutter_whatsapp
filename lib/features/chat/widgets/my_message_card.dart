@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp/colors.dart';
+import 'package:swipe_to/swipe_to.dart';
+
+import 'package:flutter_whatsapp/common/utils/colors.dart';
 import 'package:flutter_whatsapp/common/enums/message_enum.dart';
 import 'package:flutter_whatsapp/features/chat/widgets/display_text_image_gif.dart';
-import 'package:flutter_whatsapp/widgets/custom_text.dart';
-import 'package:swipe_to/swipe_to.dart';
 
 class MyMessageCard extends StatelessWidget {
   final String message;
@@ -15,20 +15,22 @@ class MyMessageCard extends StatelessWidget {
   final MessageEnum repliedMessageType;
   final bool isSeen;
 
-  const MyMessageCard(
-      {Key? key,
-      required this.message,
-      required this.date,
-      required this.type,
-      required this.onLeftSwipe,
-      required this.repliedText,
-      required this.username,
-      required this.repliedMessageType, required this.isSeen})
-      : super(key: key);
+  const MyMessageCard({
+    Key? key,
+    required this.message,
+    required this.date,
+    required this.type,
+    required this.onLeftSwipe,
+    required this.repliedText,
+    required this.username,
+    required this.repliedMessageType,
+    required this.isSeen,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final isReplying = repliedText.isNotEmpty;
+
     return SwipeTo(
       onLeftSwipe: onLeftSwipe,
       child: Align(
@@ -54,31 +56,37 @@ class MyMessageCard extends StatelessWidget {
                           bottom: 20,
                         )
                       : const EdgeInsets.only(
-                          left: 5, right: 5, top: 5, bottom: 25),
+                          left: 5,
+                          top: 5,
+                          right: 5,
+                          bottom: 25,
+                        ),
                   child: Column(
                     children: [
                       if (isReplying) ...[
-                        CustomText(
-                          text: username,
-                          fontWeight: FontWeight.bold,
+                        Text(
+                          username,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 3,
-                        ),
+                        const SizedBox(height: 3),
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                              color: backgroundColor.withOpacity(0.5),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(5))),
+                            color: backgroundColor.withOpacity(0.5),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(
+                                5,
+                              ),
+                            ),
+                          ),
                           child: DisplayTextImageGIF(
                             message: repliedText,
                             type: repliedMessageType,
                           ),
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
+                        const SizedBox(height: 8),
                       ],
                       DisplayTextImageGIF(
                         message: message,
@@ -102,10 +110,10 @@ class MyMessageCard extends StatelessWidget {
                       const SizedBox(
                         width: 5,
                       ),
-                       Icon(
-                       isSeen ? Icons.done_all : Icons.done,
+                      Icon(
+                        isSeen ? Icons.done_all : Icons.done,
                         size: 20,
-                        color: isSeen? Colors.blue : Colors.white60,
+                        color: isSeen ? Colors.blue : Colors.white60,
                       ),
                     ],
                   ),

@@ -1,55 +1,59 @@
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:flutter_whatsapp/features/auth/repository/auth_repository.dart';
 import 'package:flutter_whatsapp/models/user_model.dart';
 
-final authcontrollerProvider = Provider((ref) {
-  final authRepository = ref.watch(authrepositoryProvider);
+final authControllerProvider = Provider((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
   return AuthController(authRepository: authRepository, ref: ref);
 });
 
 final userDataAuthProvider = FutureProvider((ref) {
-  final authController = ref.watch(authcontrollerProvider);
+  final authController = ref.watch(authControllerProvider);
   return authController.getUserData();
 });
 
 class AuthController {
   final AuthRepository authRepository;
   final ProviderRef ref;
-  AuthController({required this.authRepository, required this.ref});
+  AuthController({
+    required this.authRepository,
+    required this.ref,
+  });
 
-// Function to get the user data
   Future<UserModel?> getUserData() async {
     UserModel? user = await authRepository.getCurrentUserData();
     return user;
   }
 
-// controller of phone auth
   void signInWithPhone(BuildContext context, String phoneNumber) {
     authRepository.signInWithPhone(context, phoneNumber);
   }
 
-// controller of verifying otp
   void verifyOTP(BuildContext context, String verificationId, String userOTP) {
-    authRepository.verifyOtp(
-        context: context, verificationId: verificationId, userOtp: userOTP);
+    authRepository.verifyOTP(
+      context: context,
+      verificationId: verificationId,
+      userOTP: userOTP,
+    );
   }
 
-// controller for saving user data to firebase
   void saveUserDataToFirebase(
       BuildContext context, String name, File? profilePic) {
     authRepository.saveUserDataToFirebase(
-        name: name, profilePic: profilePic, ref: ref, context: context);
+      name: name,
+      profilePic: profilePic,
+      ref: ref,
+      context: context,
+    );
   }
 
-  // getting the user data in stream to check online status
   Stream<UserModel> userDataById(String userId) {
     return authRepository.userData(userId);
   }
 
-  // set user online or offline
   void setUserState(bool isOnline) {
     authRepository.setUserState(isOnline);
   }

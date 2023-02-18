@@ -2,27 +2,33 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter_whatsapp/common/repositories/common_firebase_storage_repository.dart';
 import 'package:flutter_whatsapp/common/utils/utils.dart';
 import 'package:flutter_whatsapp/models/status_model.dart';
 import 'package:flutter_whatsapp/models/user_model.dart';
-import 'package:uuid/uuid.dart';
 
-final statusRepositoryProvider = Provider((ref) => StatusRepository(
+final statusRepositoryProvider = Provider(
+  (ref) => StatusRepository(
     firestore: FirebaseFirestore.instance,
     auth: FirebaseAuth.instance,
-    ref: ref));
+    ref: ref,
+  ),
+);
 
 class StatusRepository {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
   final ProviderRef ref;
-
-  StatusRepository(
-      {required this.firestore, required this.auth, required this.ref});
+  StatusRepository({
+    required this.firestore,
+    required this.auth,
+    required this.ref,
+  });
 
   void uploadStatus({
     required String username,
@@ -34,24 +40,31 @@ class StatusRepository {
     try {
       var statusId = const Uuid().v1();
       String uid = auth.currentUser!.uid;
-      String imageUrl = await ref
+      String imageurl = await ref
           .read(commonFirebaseStorageRepositoryProvider)
-          .storeFileToFirebase('/status/$statusId$uid', statusImage);
+          .storeFileToFirebase(
+            '/status/$statusId$uid',
+            statusImage,
+          );
       List<Contact> contacts = [];
-
       if (await FlutterContacts.requestPermission()) {
         contacts = await FlutterContacts.getContacts(withProperties: true);
       }
 
       List<String> uidWhoCanSee = [];
+
       for (int i = 0; i < contacts.length; i++) {
         var userDataFirebase = await firestore
             .collection('users')
             .where(
               'phoneNumber',
-              isEqualTo: contacts[i].phones[0].number.replaceAll(' ', ''),
+              isEqualTo: contacts[i].phones[0].number.replaceAll(
+                    ' ',
+                    '',
+                  ),
             )
             .get();
+
         if (userDataFirebase.docs.isNotEmpty) {
           var userData = UserModel.fromMap(userDataFirebase.docs[0].data());
           uidWhoCanSee.add(userData.uid);
@@ -59,35 +72,81 @@ class StatusRepository {
       }
 
       List<String> statusImageUrls = [];
-      var statusSnapshots = await firestore
+      var statusesSnapshot = await firestore
           .collection('status')
-          .where('uid', isEqualTo: auth.currentUser!.uid)
+          .where(
+            'uid',
+            isEqualTo: auth.currentUser!.uid,
+          )
           .get();
 
-      if (statusSnapshots.docs.isNotEmpty) {
-        Status status = Status.fromMap(statusSnapshots.docs[0].data());
+      if (statusesSnapshot.docs.isNotEmpty) {
+        Status status = Status.fromMap(statusesSnapshot.docs[0].data());
         statusImageUrls = status.photoUrl;
-        statusImageUrls.add(imageUrl);
+        statusImageUrls.add(imageurl);
         await firestore
             .collection('status')
-            .doc(statusSnapshots.docs[0].id)
-            .update({'photoUrl': statusImageUrls});
+            .doc(statusesSnapshot.docs[0].id)
+            .update({
+          'photoUrl': statusImageUrls,
+        });
         return;
       } else {
-        statusImageUrls = [imageUrl];
+        statusImageUrls = [imageurl];
       }
+
       Status status = Status(
-          uid: uid,
-          username: username,
-          phoneNumber: phoneNumber,
-          photoUrl: statusImageUrls,
-          createdAt: DateTime.now(),
-          profilePic: profilePic,
-          statusId: statusId,
-          whoCanSee: uidWhoCanSee);
+        uid: uid,
+        username: username,
+        phoneNumber: phoneNumber,
+        photoUrl: statusImageUrls,
+        createdAt: DateTime.now(),
+        profilePic: profilePic,
+        statusId: statusId,
+        whoCanSee: uidWhoCanSee,
+      );
+
       await firestore.collection('status').doc(statusId).set(status.toMap());
     } catch (e) {
-      showSnackbar(context: context, content: e.toString());
+      showSnackBar(context: context, content: e.toString());
     }
+  }
+
+  Future<List<Status>> getStatus(BuildContext context) async {
+    List<Status> statusData = [];
+    try {
+      List<Contact> contacts = [];
+      if (await FlutterContacts.requestPermission()) {
+        contacts = await FlutterContacts.getContacts(withProperties: true);
+      }
+      for (int i = 0; i < contacts.length; i++) {
+        var statusesSnapshot = await firestore
+            .collection('status')
+            .where(
+              'phoneNumber',
+              isEqualTo: contacts[i].phones[0].number.replaceAll(
+                    ' ',
+                    '',
+                  ),
+            )
+            .where(
+              'createdAt',
+              isGreaterThan: DateTime.now()
+                  .subtract(const Duration(hours: 24))
+                  .millisecondsSinceEpoch,
+            )
+            .get();
+        for (var tempData in statusesSnapshot.docs) {
+          Status tempStatus = Status.fromMap(tempData.data());
+          if (tempStatus.whoCanSee.contains(auth.currentUser!.uid)) {
+            statusData.add(tempStatus);
+          }
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) print(e);
+      showSnackBar(context: context, content: e.toString());
+    }
+    return statusData;
   }
 }

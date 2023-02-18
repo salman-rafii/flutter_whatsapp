@@ -1,23 +1,10 @@
-// To parse this JSON data, do
-//
-//     final userModel = userModelFromMap(jsonString);
-
-import 'dart:convert';
-
-List<UserModel> userModelFromMap(String str) =>
-    List<UserModel>.from(json.decode(str).map((x) => UserModel.fromMap(x)));
-
-String userModelToMap(List<UserModel> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
-
 class UserModel {
-  String name;
-  String uid;
-  String profilePic;
-  bool isOnline;
-  String phoneNumber;
-  List<String> groupId;
-
+  final String name;
+  final String uid;
+  final String profilePic;
+  final bool isOnline;
+  final String phoneNumber;
+  final List<String> groupId;
   UserModel({
     required this.name,
     required this.uid,
@@ -27,21 +14,25 @@ class UserModel {
     required this.groupId,
   });
 
-  factory UserModel.fromMap(Map<String, dynamic> json) => UserModel(
-        name: json["name"],
-        uid: json["uid"],
-        profilePic: json["profilePic"],
-        isOnline: json["isOnline"],
-        phoneNumber: json["phoneNumber"],
-        groupId: List<String>.from(json["groupId"].map((x) => x)),
-      );
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'uid': uid,
+      'profilePic': profilePic,
+      'isOnline': isOnline,
+      'phoneNumber': phoneNumber,
+      'groupId': groupId,
+    };
+  }
 
-  Map<String, dynamic> toMap() => {
-        "name": name,
-        "uid": uid,
-        "profilePic": profilePic,
-        "isOnline": isOnline,
-        "phoneNumber": phoneNumber,
-        "groupId": List<dynamic>.from(groupId.map((x) => x)),
-      };
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      name: map['name'] ?? '',
+      uid: map['uid'] ?? '',
+      profilePic: map['profilePic'] ?? '',
+      isOnline: map['isOnline'] ?? false,
+      phoneNumber: map['phoneNumber'] ?? '',
+      groupId: List<String>.from(map['groupId']),
+    );
+  }
 }

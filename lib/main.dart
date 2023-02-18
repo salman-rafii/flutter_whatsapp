@@ -1,19 +1,25 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_whatsapp/colors.dart';
+import 'package:flutter_whatsapp/common/utils/colors.dart';
 import 'package:flutter_whatsapp/common/widgets/error.dart';
 import 'package:flutter_whatsapp/common/widgets/loader.dart';
 import 'package:flutter_whatsapp/features/auth/controller/auth_controller.dart';
-import 'package:flutter_whatsapp/features/landing/landing_screen.dart';
+import 'package:flutter_whatsapp/features/landing/screens/landing_screen.dart';
 import 'package:flutter_whatsapp/firebase_options.dart';
 import 'package:flutter_whatsapp/router.dart';
-import 'package:flutter_whatsapp/screens/mobile_layout_screen.dart';
+import 'package:flutter_whatsapp/mobile_layout_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const ProviderScope(child: MyApp()));
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {
@@ -23,10 +29,13 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Whatsapp',
+      title: 'Whatsapp UI',
       theme: ThemeData.dark().copyWith(
-          scaffoldBackgroundColor: backgroundColor,
-          appBarTheme: const AppBarTheme(color: appBarColor)),
+        scaffoldBackgroundColor: backgroundColor,
+        appBarTheme: const AppBarTheme(
+          color: appBarColor,
+        ),
+      ),
       onGenerateRoute: (settings) => generateRoute(settings),
       home: ref.watch(userDataAuthProvider).when(
             data: (user) {
@@ -35,17 +44,13 @@ class MyApp extends ConsumerWidget {
               }
               return const MobileLayoutScreen();
             },
-            error: (error, stackTrace) {
+            error: (err, trace) {
               return ErrorScreen(
-                error: error.toString(),
+                error: err.toString(),
               );
             },
             loading: () => const Loader(),
           ),
-      // home: const ResponsiveLayout(
-      //   mobileScreenLayout: MobileLayoutScreen(),
-      //   webScreenLayout: WebLayoutScreen(),
-      // ),
     );
   }
 }

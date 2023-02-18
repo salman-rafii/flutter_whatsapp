@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 
 class VideoPlayerItem extends StatefulWidget {
   final String videoUrl;
-  const VideoPlayerItem({super.key, required this.videoUrl});
+  const VideoPlayerItem({
+    Key? key,
+    required this.videoUrl,
+  }) : super(key: key);
 
   @override
   State<VideoPlayerItem> createState() => _VideoPlayerItemState();
@@ -15,17 +18,17 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   @override
   void initState() {
+    super.initState();
     videoPlayerController = CachedVideoPlayerController.network(widget.videoUrl)
       ..initialize().then((value) {
         videoPlayerController.setVolume(1);
       });
-    super.initState();
   }
 
   @override
   void dispose() {
-    videoPlayerController.dispose();
     super.dispose();
+    videoPlayerController.dispose();
   }
 
   @override
@@ -53,7 +56,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                 isPlay ? Icons.pause_circle : Icons.play_circle,
               ),
             ),
-          )
+          ),
         ],
       ),
     );

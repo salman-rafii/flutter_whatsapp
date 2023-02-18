@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,22 +9,27 @@ import 'package:flutter_whatsapp/common/utils/utils.dart';
 import 'package:flutter_whatsapp/features/auth/screens/otp_screen.dart';
 import 'package:flutter_whatsapp/features/auth/screens/user_information_screen.dart';
 import 'package:flutter_whatsapp/models/user_model.dart';
-import 'package:flutter_whatsapp/screens/mobile_layout_screen.dart';
+import 'package:flutter_whatsapp/mobile_layout_screen.dart';
 
-final authrepositoryProvider = Provider(
-    (ref) => AuthRepository(FirebaseAuth.instance, FirebaseFirestore.instance));
+final authRepositoryProvider = Provider(
+  (ref) => AuthRepository(
+    auth: FirebaseAuth.instance,
+    firestore: FirebaseFirestore.instance,
+  ),
+);
 
 class AuthRepository {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;
-
-  AuthRepository(this.auth, this.firestore);
-
-// function to check current user
+  AuthRepository({
+    required this.auth,
+    required this.firestore,
+  });
 
   Future<UserModel?> getCurrentUserData() async {
     var userData =
-        await firestore.collection("users").doc(auth.currentUser?.uid).get();
+        await firestore.collection('users').doc(auth.currentUser?.uid).get();
+
     UserModel? user;
     if (userData.data() != null) {
       user = UserModel.fromMap(userData.data()!);
@@ -34,7 +37,6 @@ class AuthRepository {
     return user;
   }
 
-// function to sign in with phone & get the OTP
   void signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
       await auth.verifyPhoneNumber(
@@ -45,47 +47,46 @@ class AuthRepository {
         verificationFailed: (e) {
           throw Exception(e.message);
         },
-        codeSent: ((verificationId, resendToken) async {
-          Navigator.pushNamed(context, OTPScreen.routeName,
-              arguments: verificationId);
+        codeSent: ((String verificationId, int? resendToken) async {
+          Navigator.pushNamed(
+            context,
+            OTPScreen.routeName,
+            arguments: verificationId,
+          );
         }),
-        codeAutoRetrievalTimeout: ((verificationId) {}),
+        codeAutoRetrievalTimeout: (String verificationId) {},
       );
     } on FirebaseAuthException catch (e) {
-      showSnackbar(
-        context: context,
-        content: e.message!,
-      );
+      showSnackBar(context: context, content: e.message!);
     }
   }
 
-// function to verify the OTP
-  void verifyOtp(
-      {required BuildContext context,
-      required String verificationId,
-      required String userOtp}) async {
+  void verifyOTP({
+    required BuildContext context,
+    required String verificationId,
+    required String userOTP,
+  }) async {
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-          verificationId: verificationId, smsCode: userOtp);
+        verificationId: verificationId,
+        smsCode: userOTP,
+      );
       await auth.signInWithCredential(credential);
       Navigator.pushNamedAndRemoveUntil(
-          context, UserInformationScreen.routeName, (route) => false);
-    } on FirebaseAuthException catch (e) {
-      showSnackbar(
-        context: context,
-        content: e.message!,
+        context,
+        UserInformationScreen.routeName,
+        (route) => false,
       );
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context: context, content: e.message!);
     }
   }
-
-  // function to save user data to firebase
 
   void saveUserDataToFirebase({
     required String name,
     required File? profilePic,
     required ProviderRef ref,
     required BuildContext context,
-    // bool mounted = true
   }) async {
     try {
       String uid = auth.currentUser!.uid;
@@ -95,36 +96,43 @@ class AuthRepository {
       if (profilePic != null) {
         photoUrl = await ref
             .read(commonFirebaseStorageRepositoryProvider)
-            .storeFileToFirebase("profilePic/$uid", profilePic);
+            .storeFileToFirebase(
+              'profilePic/$uid',
+              profilePic,
+            );
       }
 
       var user = UserModel(
-          name: name,
-          uid: uid,
-          profilePic: photoUrl,
-          isOnline: true,
-          phoneNumber: auth.currentUser!.phoneNumber!,
-          groupId: []);
-      await firestore.collection("users").doc(uid).set(user.toMap());
-      // if (!mounted) return;
+        name: name,
+        uid: uid,
+        profilePic: photoUrl,
+        isOnline: true,
+        phoneNumber: auth.currentUser!.phoneNumber!,
+        groupId: [],
+      );
+
+      await firestore.collection('users').doc(uid).set(user.toMap());
+
       Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const MobileLayoutScreen()),
-          (route) => false);
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MobileLayoutScreen(),
+        ),
+        (route) => false,
+      );
     } catch (e) {
-      showSnackbar(context: context, content: e.toString());
+      showSnackBar(context: context, content: e.toString());
     }
   }
 
   Stream<UserModel> userData(String userId) {
-    return firestore
-        .collection("users")
-        .doc(userId)
-        .snapshots()
-        .map((event) => UserModel.fromMap(event.data()!));
+    return firestore.collection('users').doc(userId).snapshots().map(
+          (event) => UserModel.fromMap(
+            event.data()!,
+          ),
+        );
   }
 
-  // handle user online/offline
   void setUserState(bool isOnline) async {
     await firestore.collection('users').doc(auth.currentUser!.uid).update({
       'isOnline': isOnline,
